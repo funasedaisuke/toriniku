@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>とりにく</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+</head>
+<body>
+
+
+<!-- <form action="/todo" method="POST">
+    新規追加：<input type="text" name="text" value="">
+    <select name="status" id="">
+        <option value="1">未対応</option>
+        <option value="2">対応中</option>
+        <option value="3">完了</option>
+    </select>
+    <input type="submit" value="送信">
+</form> -->
+<div class = "col-sm-4">
+<h1>今日はお肉が食べたい</h1>
+{{range .products}}
+<p>"最安値"{{.Product}}</p>
+{{end}}
+</div>
+
+<!-- 
+<table>
+    <form method="post" id="frmDelete">
+        <tr>
+            <td>TODO</td>
+            <td>ステータス</td>
+        </tr>
+        {{range .products}}
+            <tr>
+                <td>{{.Product}}</td>
+                <td>
+                    {{if eq .Status 1}}
+                    未対応
+                    {{else if eq .Status 2}}
+                    対応中
+                    {{else if eq .Status 3}}
+                    完了
+                    {{end}}
+                </td>
+                <td><a href="/todo/{{.ID}}">編集</a></td>
+                <td><a href="javascript:void(0);" data-id="{{.ID}}" class="delete">削除</a></td>
+            </tr>
+        {{end}}
+    </form>
+</table> -->
+
+
+</body>
+</html>
