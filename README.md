@@ -1,18 +1,18 @@
 
-# Name
+### Name
 toriniku  
 Go * Gin * GORM → WEB_APPLICATIOM  
 Toriniku_Price_Getter  
 
-# Description
+### Description
 鶏肉の最安値を表示するWEBアプリケーション  
 GinによるMVCアーキテクチャー  
 
-# Requirement
+### Requirement
 Go  
 mysql  
 
-#Usage
+###Usage
 ```
 git clone https://github.com/uh-zz/selenium_price.git  
 cd toriniku  
