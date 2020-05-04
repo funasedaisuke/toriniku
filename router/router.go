@@ -8,9 +8,12 @@ import (
 )
 
 func Router(dbConn *gorm.DB) {
+
+	//初期化したデータベースをcontrollersに渡す
 	nikuHandler := controllers.NikuHandler{
 		Db: dbConn,
 	}
+	//Default() はLoggerとRecoveryというミドルウェア設定
 	r := gin.Default()
 	r.LoadHTMLGlob("templates/*")
 	r.GET("/top", nikuHandler.GetAll) // 一覧画面

@@ -9,9 +9,12 @@ import (
 //db
 var db *gorm.DB
 
+//*gorm.DBはreturnの型
 func Init() *gorm.DB {
 	db = gormConnect()
+	// ロガーを有効にすると、詳細なログを表示します
 	db.LogMode(true)
+	//マイグレーションを実行するとテーブルが無い時は自動生成。あるときはなにもしない
 	db.AutoMigrate(&models.Product{})
 	return db
 }
