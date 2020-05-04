@@ -12,7 +12,7 @@ GinによるMVCアーキテクチャー
 Go  
 mysql  
 
-###Usage
+### Usage
 ```
 git clone https://github.com/uh-zz/selenium_price.git  
 cd toriniku  
