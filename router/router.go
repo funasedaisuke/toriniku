@@ -15,6 +15,7 @@ func Router(dbConn *gorm.DB) {
 	}
 	//Default() はLoggerとRecoveryというミドルウェア設定
 	r := gin.Default()
+	r.Static("/assets", "./assets")
 	r.LoadHTMLGlob("templates/*")
 	r.GET("/top", nikuHandler.GetAll) // 一覧画面
 	// r.GET("/json", nikuHandler.Getjson) // json画面
