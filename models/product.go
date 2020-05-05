@@ -29,3 +29,10 @@ type PostCode struct {
 	} `json:"results"`
 	Status int `json:"status"`
 }
+
+type Yokado struct {
+	Product          string `json:"product"`
+	Price            string `json:"price"`
+	TaxIncludedPrice string `json:"tax_included_price"`
+	Per100G          string `json:"per_100g"`
+}
