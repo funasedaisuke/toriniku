@@ -32,41 +32,51 @@ func (h *NikuHandler) GetAll(c *gin.Context) {
 func Getjson(h *NikuHandler) {
 
 	//GETからPOSTに変更。POSTはhtto.bodyに情報を持たせることができる
-
 	// url.Values は、内部的には map なので、make する必要がある
-	values := make(url.Values)
-	values.Set("key", "value")
+	values := url.Values{} // url.Valuesオブジェクト生成
+	// values.Set("key", "value")
 
 	// POSTメソッド
-	url := "https://zip-cloud.appspot.com/api/search?zipcode=7830060"
+	url := "http://localhost:5001/search"
 	//Getメソッド
 	// resp, err := http.Get(url)
-	resp, err := http.NewRequest(
+	req, err := http.NewRequest(
 		"POST",
 		url,
 		strings.NewReader(values.Encode()),
 	)
+	fmt.Println(req)
 
 	if err != nil {
 		fmt.Println("Get(url) error")
 	}
+	req.Header.Add("Content-Type", "application/json")
+	resp, error := http.DefaultClient.Do(req)
+	if error != nil {
+		fmt.Println(error)
+	}
+
 	defer resp.Body.Close()
 	byteArray, _ := ioutil.ReadAll(resp.Body)
 
 	jsonBytes := ([]byte)(byteArray)
-	data := new(models.PostCode)
+	data := new(models.Shop)
+
 	// fmt.Println(byteArray)
+	fmt.Println(jsonBytes)
 	fmt.Println(data)
 
 	fmt.Println("before error")
-	var yokado_product []*models.Yokado
-	if err := json.Unmarshal(jsonBytes, &yokado_product); err != nil {
+	if err := json.Unmarshal(jsonBytes, &data); err != nil {
 		fmt.Println("JSON Unmarshal error:", err)
 		return
 	}
-	fmt.Println(data)
-	//データベースに保存する
-	h.Db.Create(&models.Yokado{Product: data.Results[0].Address1})
+	fmt.Println(data.Total_item)
+	for _, item := range data.Total_item {
+		// 	//データベースに保存する
+		h.Db.Create(&models.Product{Product: item.Product, Price: item.Price})
+	}
+
 }
 
 // func (h *TodoHandler) EditTask(c *gin.Context) {

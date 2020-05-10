@@ -30,7 +30,12 @@ type PostCode struct {
 	Status int `json:"status"`
 }
 
-type Yokado struct {
+type Shop struct {
+	ContentType string `json:"Content-Type"`
+	Total_item  []Item `json:"total_item"`
+}
+
+type Item struct {
 	Product          string `json:"product"`
 	Price            string `json:"price"`
 	TaxIncludedPrice string `json:"tax_included_price"`
