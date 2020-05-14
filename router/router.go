@@ -18,6 +18,7 @@ func Router(dbConn *gorm.DB) {
 	r.Static("/assets", "./assets")
 	r.LoadHTMLGlob("templates/*")
 	r.GET("/top", nikuHandler.GetAll) // 一覧画面
+	r.POST("/api", nikuHandler.Getjson)
 	// r.GET("/json", nikuHandler.Getjson) // json画面
 	// r.POST("/todo", nikuHandler.CreateTask)            // 新規作成
 	// r.GET("/todo/:id", nikuHandler.EditTask)           // 編集画面

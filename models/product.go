@@ -30,14 +30,25 @@ type PostCode struct {
 	Status int `json:"status"`
 }
 
-type Shop struct {
+type Items struct {
 	ContentType string `json:"Content-Type"`
 	Total_item  []Item `json:"total_item"`
 }
 
 type Item struct {
 	Product          string `json:"product"`
-	Price            string `json:"price"`
+	Price            int    `json:"price"`
 	TaxIncludedPrice string `json:"tax_included_price"`
-	Per100G          string `json:"per_100g"`
+	Per100G          int    `json:"per_100g"`
+}
+
+type Shops struct {
+	ContentType string `json:"Content-Type"`
+	Shop_list   []Shop `json:"shop_list"`
+}
+
+type Shop struct {
+	Prefecture string `json:"prefecture"`
+	Shop_name  string `json:"shop_name"`
+	Url        string `json:"url"`
 }

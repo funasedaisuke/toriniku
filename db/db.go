@@ -15,7 +15,8 @@ func Init() *gorm.DB {
 	// ロガーを有効にすると、詳細なログを表示します
 	db.LogMode(true)
 	//マイグレーションを実行するとテーブルが無い時は自動生成。あるときはなにもしない
-	db.AutoMigrate(&models.Shop{})
+	db.AutoMigrate(&models.Items{})
+	db.AutoMigrate(&models.Shops{})
 	return db
 }
 

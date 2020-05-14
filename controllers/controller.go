@@ -19,7 +19,8 @@ type NikuHandler struct {
 
 // 一覧表示
 func (h *NikuHandler) GetAll(c *gin.Context) {
-	go Getjson(h)
+
+	GetUrl(h)
 	var products []models.Product
 	//データベース内の最新情報を格納
 	h.Db.Last(&products)
@@ -29,20 +30,20 @@ func (h *NikuHandler) GetAll(c *gin.Context) {
 	})
 }
 
-func Getjson(h *NikuHandler) {
+func (h *NikuHandler) Getjson(c *gin.Context) {
 
 	//GETからPOSTに変更。POSTはhtto.bodyに情報を持たせることができる
 	// url.Values は、内部的には map なので、make する必要がある
 	values := url.Values{} // url.Valuesオブジェクト生成
-	// values.Set("key", "value")
+	values.Set("url", "https://www.iy-net.jp/nspc/shoptop.do?shopcd=00239")
 
 	// POSTメソッド
-	url := "http://localhost:5001/search"
+	apiurl := "http://localhost:5001/search"
 	//Getメソッド
 	// resp, err := http.Get(url)
 	req, err := http.NewRequest(
 		"POST",
-		url,
+		apiurl,
 		strings.NewReader(values.Encode()),
 	)
 	fmt.Println(req)
@@ -60,7 +61,7 @@ func Getjson(h *NikuHandler) {
 	byteArray, _ := ioutil.ReadAll(resp.Body)
 
 	jsonBytes := ([]byte)(byteArray)
-	data := new(models.Shop)
+	data := new(models.Items)
 
 	// fmt.Println(byteArray)
 	fmt.Println(jsonBytes)
@@ -73,8 +74,52 @@ func Getjson(h *NikuHandler) {
 	}
 	fmt.Println(data.Total_item)
 	for _, item := range data.Total_item {
+		//一番高い金額を変数化
+		var maxprice int = 0
+		if maxprice < item.Price {
+			maxprice = item.Price
+		}
+	}
+	for _, item := range data.Total_item {
+		if maxprice == item.Price {
+			// 	//データベースに保存する
+			h.Db.Create(&models.Product{Product: item.Product, Price: item.Price})
+			break
+		}
+	}
+}
+
+func GetUrl(h *NikuHandler) {
+
+	//GETからPOSTに変更。POSTはhtto.bodyに情報を持たせることができる
+
+	url := "http://localhost:5001/shoplist"
+	//Getメソッド
+	resp, error := http.Get(url)
+
+	if error != nil {
+		fmt.Println(error)
+	}
+
+	defer resp.Body.Close()
+	byteArray, _ := ioutil.ReadAll(resp.Body)
+
+	jsonBytes := ([]byte)(byteArray)
+	data := new(models.Shops)
+
+	// fmt.Println(byteArray)
+	fmt.Println(jsonBytes)
+	fmt.Println(data)
+
+	fmt.Println("before error")
+	if err := json.Unmarshal(jsonBytes, &data); err != nil {
+		fmt.Println("JSON Unmarshal error:", err)
+		return
+	}
+	fmt.Println(data.Shop_list)
+	for _, shop := range data.Shop_list {
 		// 	//データベースに保存する
-		h.Db.Create(&models.Product{Product: item.Product, Price: item.Price})
+		h.Db.Create(&models.Product{Product: shop.Shop_name, Price: shop.Url})
 	}
 
 }
