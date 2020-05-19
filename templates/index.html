@@ -167,6 +167,9 @@
       {{range .products}}
       <p>"最安値"{{.Product}}</p>
       {{end}}
+      <form method="POST" action="/api">
+        <input type="submit" value="削除">
+    </form>
 
 
         <h4 class="mb-4">

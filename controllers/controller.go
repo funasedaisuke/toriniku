@@ -5,12 +5,11 @@ import (
 	"github.com/jinzhu/gorm"
 	"github.com/me/toriniku/models"
 	"net/http"
-	"net/url"
 	// "strconv"
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"strings"
 )
 
 type NikuHandler struct {
@@ -20,7 +19,6 @@ type NikuHandler struct {
 // 一覧表示
 func (h *NikuHandler) GetAll(c *gin.Context) {
 
-	GetUrl(h)
 	var products []models.Product
 	//データベース内の最新情報を格納
 	h.Db.Last(&products)
@@ -34,8 +32,7 @@ func (h *NikuHandler) Getjson(c *gin.Context) {
 
 	//GETからPOSTに変更。POSTはhtto.bodyに情報を持たせることができる
 	// url.Values は、内部的には map なので、make する必要がある
-	values := url.Values{} // url.Valuesオブジェクト生成
-	values.Set("url", "https://www.iy-net.jp/nspc/shoptop.do?shopcd=00239")
+	jsonStr := `{"url":"https://www.iy-net.jp/nspc/shoptop.do?shopcd=00239"}`
 
 	// POSTメソッド
 	apiurl := "http://localhost:5001/search"
@@ -44,7 +41,7 @@ func (h *NikuHandler) Getjson(c *gin.Context) {
 	req, err := http.NewRequest(
 		"POST",
 		apiurl,
-		strings.NewReader(values.Encode()),
+		bytes.NewBuffer([]byte(jsonStr)),
 	)
 	fmt.Println(req)
 
@@ -60,33 +57,33 @@ func (h *NikuHandler) Getjson(c *gin.Context) {
 	defer resp.Body.Close()
 	byteArray, _ := ioutil.ReadAll(resp.Body)
 
-	jsonBytes := ([]byte)(byteArray)
+	jsonBytes := []byte(byteArray)
 	data := new(models.Items)
-
-	// fmt.Println(byteArray)
-	fmt.Println(jsonBytes)
-	fmt.Println(data)
 
 	fmt.Println("before error")
 	if err := json.Unmarshal(jsonBytes, &data); err != nil {
 		fmt.Println("JSON Unmarshal error:", err)
 		return
 	}
-	fmt.Println(data.Total_item)
+
+	var maxprice = 10000
 	for _, item := range data.Total_item {
 		//一番高い金額を変数化
-		var maxprice int = 0
-		if maxprice < item.Price {
-			maxprice = item.Price
+		fmt.Println(item.Per100G)
+		if maxprice > item.Per100G {
+			maxprice = item.Per100G
+			fmt.Println(maxprice)
 		}
 	}
+	fmt.Println("maxprice after for", maxprice)
 	for _, item := range data.Total_item {
 		if maxprice == item.Price {
 			// 	//データベースに保存する
-			h.Db.Create(&models.Product{Product: item.Product, Price: item.Price})
+			h.Db.Create(&models.Product{Product: item.Product, Price: item.Price, Per100G: item.Per100G})
 			break
 		}
 	}
+	c.Redirect(http.StatusMovedPermanently, "/top")
 }
 
 func GetUrl(h *NikuHandler) {
@@ -119,7 +116,7 @@ func GetUrl(h *NikuHandler) {
 	fmt.Println(data.Shop_list)
 	for _, shop := range data.Shop_list {
 		// 	//データベースに保存する
-		h.Db.Create(&models.Product{Product: shop.Shop_name, Price: shop.Url})
+		h.Db.Create(&models.Product{Product: shop.Shop_name})
 	}
 
 }
