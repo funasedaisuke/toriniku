@@ -11,13 +11,15 @@ type Product struct {
 	//CreatedAt time.Time
 	//UpdatedAt time.Time
 	//DeletedAt *time.Time
-	Product string
-	Price   int
-	Per100G int
+	ShopName string
+	Product  string
+	Price    int
+	Per100G  int
 }
 
 type Items struct {
 	ContentType string `json:"Content-Type"`
+	ShopName    string `json:"shop_name"`
 	Total_item  []Item `json:"total_item"`
 }
 

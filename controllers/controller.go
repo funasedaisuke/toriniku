@@ -43,8 +43,6 @@ func (h *NikuHandler) Getjson(c *gin.Context) {
 		apiurl,
 		bytes.NewBuffer([]byte(jsonStr)),
 	)
-	fmt.Println(req)
-
 	if err != nil {
 		fmt.Println("Get(url) error")
 	}
@@ -60,26 +58,22 @@ func (h *NikuHandler) Getjson(c *gin.Context) {
 	jsonBytes := []byte(byteArray)
 	data := new(models.Items)
 
-	fmt.Println("before error")
 	if err := json.Unmarshal(jsonBytes, &data); err != nil {
 		fmt.Println("JSON Unmarshal error:", err)
 		return
 	}
 
-	var maxprice = 10000
+	var minprice = 10000
+	var shopname = data.ShopName
 	for _, item := range data.Total_item {
 		//一番高い金額を変数化
-		fmt.Println(item.Per100G)
-		if maxprice > item.Per100G {
-			maxprice = item.Per100G
-			fmt.Println(maxprice)
+		if minprice > item.Per100G {
+			minprice = item.Per100G
 		}
 	}
-	fmt.Println("maxprice after for", maxprice)
 	for _, item := range data.Total_item {
-		if maxprice == item.Price {
-			// 	//データベースに保存する
-			h.Db.Create(&models.Product{Product: item.Product, Price: item.Price, Per100G: item.Per100G})
+		if minprice == item.Per100G {
+			h.Db.Create(&models.Product{ShopName: shopname, Product: item.Product, Price: item.Price, Per100G: item.Per100G})
 			break
 		}
 	}
