@@ -1,15 +1,15 @@
 package controllers
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/jinzhu/gorm"
-	"github.com/me/toriniku/models"
-	"net/http"
-	// "strconv"
 	"bytes"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"net/http"
+	"toriniku/models"
+
+	"github.com/gin-gonic/gin"
+	"github.com/jinzhu/gorm"
 )
 
 type NikuHandler struct {

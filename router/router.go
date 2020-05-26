@@ -1,9 +1,10 @@
 package router
 
 import (
+	"toriniku/controllers"
+
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
-	"github.com/me/toriniku/controllers"
 	// "github.com/me/toriniku/db"
 )
 

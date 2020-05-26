@@ -1,9 +1,10 @@
 package db
 
 import (
+	"toriniku/models"
+
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
-	"github.com/me/toriniku/models"
 )
 
 //db
