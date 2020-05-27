@@ -14,10 +14,23 @@ mysql
 
 ### Usage
 ```
-git clone https://github.com/uh-zz/selenium_price.git  
-cd toriniku  
-go run main.go  
-open http://localhost:8000  
+git clone https://github.com/funasedaisuke/toriniku.git
+
+cd toriniku
+
+<!-- 以下のコマンドを実行して"shared-network"があることを確認 -->
+docker network ls
+
+<!-- 上記のネットワークがなければ以下のコマンドを実行 -->
+docker network create shared-network
+
+docker-compose up -d
+
+<!-- goをビルド -->
+docker-compose build
+
+<!-- トップページを開く -->
+open http://localhost:8000/top
 ```
 
-[tcnksm](https://github.com/funasedaisuke/)  
+[funasedaisuke](https://github.com/funasedaisuke/)  

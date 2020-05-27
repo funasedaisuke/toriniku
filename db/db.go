@@ -27,7 +27,8 @@ func gormConnect() *gorm.DB {
 	PASS := "12345678"
 	DBNAME := "test"
 	// MySQLだと文字コードの問題で"?parseTime=true"を末尾につける必要がある
-	CONNECT := USER + ":" + PASS + "@/" + DBNAME + "?parseTime=true"
+	// CONNECT := USER + ":" + PASS + "@/" + DBNAME + "?parseTime=true"
+	CONNECT := USER + ":" + PASS + "@tcp(toriniku_mysql)/" + DBNAME + "?parseTime=true"
 	db, err := gorm.Open(DBMS, CONNECT)
 
 	if err != nil {
