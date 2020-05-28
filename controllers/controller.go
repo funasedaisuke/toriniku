@@ -35,7 +35,8 @@ func (h *NikuHandler) Getjson(c *gin.Context) {
 	jsonStr := `{"url":"https://www.iy-net.jp/nspc/shoptop.do?shopcd=00239"}`
 
 	// POSTメソッド
-	apiurl := "http://172.26.0.3:5001/search"
+	// apiurl := "http://172.26.0.3:5001/search"
+	apiurl := "http://selenium-python:5001/search"
 	//Getメソッド
 	// resp, err := http.Get(url)
 	req, err := http.NewRequest(

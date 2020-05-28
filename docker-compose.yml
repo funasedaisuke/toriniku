@@ -32,8 +32,10 @@ services:
             - .:/go/src/toriniku
         command: sh ./start_app.sh
         networks: 
-            - default
-            - shared-network
+            default:
+            shared-network:
+                aliases: 
+                    - toriniku-go
 networks: 
     shared-network:
         external: true      
