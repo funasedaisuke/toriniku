@@ -7,10 +7,9 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 )
 
-//db
 var db *gorm.DB
 
-//*gorm.DBはreturnの型
+// Init *gorm.DBはreturnの型
 func Init() *gorm.DB {
 	db = gormConnect()
 	// ロガーを有効にすると、詳細なログを表示します
@@ -21,28 +20,30 @@ func Init() *gorm.DB {
 	return db
 }
 
+// gormConnect　DBのコネクションを接続
 func gormConnect() *gorm.DB {
 	DBMS := "mysql"
 	USER := "test"
 	PASS := "12345678"
 	DBNAME := "test"
-	// MySQLだと文字コードの問題で"?parseTime=true"を末尾につける必要がある
-	// CONNECT := USER + ":" + PASS + "@/" + DBNAME + "?parseTime=true"
-	CONNECT := USER + ":" + PASS + "@tcp(toriniku_mysql)/" + DBNAME + "?parseTime=true"
-	db, err := gorm.Open(DBMS, CONNECT)
+	CONTAINER := "toriniku_mysql"
 
+	// MySQLだと文字コードの問題で"?parseTime=true"を末尾につける必要がある
+	CONNECT := USER + ":" + PASS + "@tcp(" + CONTAINER + ")/" + DBNAME + "?parseTime=true"
+
+	db, err := gorm.Open(DBMS, CONNECT)
 	if err != nil {
 		panic(err.Error())
 	}
 	return db
 }
 
-// DBのコネクションを接続
+// Get DBのコネクションを接続
 func Get() *gorm.DB {
 	return db
 }
 
-// DBのコネクションを切断する
+// Close DBのコネクションを切断する
 func Close() {
 	db.Close()
 }

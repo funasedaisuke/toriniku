@@ -6,7 +6,7 @@ import (
 )
 
 func main() {
+
 	dbConn := db.Init()
-	//routerパッケージのRouter()
 	router.Router(dbConn)
 }

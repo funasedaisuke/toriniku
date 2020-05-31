@@ -12,11 +12,12 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+// NikuHandler db操作構造体
 type NikuHandler struct {
 	Db *gorm.DB
 }
 
-// 一覧表示
+// GetAll 一覧表示
 func (h *NikuHandler) GetAll(c *gin.Context) {
 
 	var products []models.Product
@@ -28,17 +29,14 @@ func (h *NikuHandler) GetAll(c *gin.Context) {
 	})
 }
 
+// Getjson １店舗の鶏肉情報を取得
 func (h *NikuHandler) Getjson(c *gin.Context) {
 
-	//GETからPOSTに変更。POSTはhtto.bodyに情報を持たせることができる
-	// url.Values は、内部的には map なので、make する必要がある
+	// 店舗URL
 	jsonStr := `{"url":"https://www.iy-net.jp/nspc/shoptop.do?shopcd=00239"}`
-
-	// POSTメソッド
-	// apiurl := "http://172.26.0.3:5001/search"
+	// seleniumアプリURL
 	apiurl := "http://selenium-python:5001/search"
-	//Getメソッド
-	// resp, err := http.Get(url)
+
 	req, err := http.NewRequest(
 		"POST",
 		apiurl,
@@ -48,6 +46,7 @@ func (h *NikuHandler) Getjson(c *gin.Context) {
 		fmt.Println("Get(url) error")
 	}
 	req.Header.Add("Content-Type", "application/json")
+
 	resp, error := http.DefaultClient.Do(req)
 	if error != nil {
 		fmt.Println(error)
@@ -66,13 +65,13 @@ func (h *NikuHandler) Getjson(c *gin.Context) {
 
 	var minprice = 10000
 	var shopname = data.ShopName
-	for _, item := range data.Total_item {
+	for _, item := range data.TotalItem {
 		//一番高い金額を変数化
 		if minprice > item.Per100G {
 			minprice = item.Per100G
 		}
 	}
-	for _, item := range data.Total_item {
+	for _, item := range data.TotalItem {
 		if minprice == item.Per100G {
 			h.Db.Create(&models.Product{ShopName: shopname, Product: item.Product, Price: item.Price, Per100G: item.Per100G})
 			break
@@ -81,37 +80,36 @@ func (h *NikuHandler) Getjson(c *gin.Context) {
 	c.Redirect(http.StatusMovedPermanently, "/top")
 }
 
-func GetUrl(h *NikuHandler) {
-
-	//GETからPOSTに変更。POSTはhtto.bodyに情報を持たせることができる
+// GetURL 各店舗のURLを取得
+func GetURL(h *NikuHandler) {
 
 	url := "http://localhost:5001/shoplist"
-	//Getメソッド
-	resp, error := http.Get(url)
 
+	resp, error := http.Get(url)
 	if error != nil {
 		fmt.Println(error)
 	}
 
 	defer resp.Body.Close()
-	byteArray, _ := ioutil.ReadAll(resp.Body)
 
+	byteArray, _ := ioutil.ReadAll(resp.Body)
 	jsonBytes := ([]byte)(byteArray)
+
 	data := new(models.Shops)
 
-	// fmt.Println(byteArray)
 	fmt.Println(jsonBytes)
 	fmt.Println(data)
 
-	fmt.Println("before error")
 	if err := json.Unmarshal(jsonBytes, &data); err != nil {
 		fmt.Println("JSON Unmarshal error:", err)
 		return
 	}
-	fmt.Println(data.Shop_list)
-	for _, shop := range data.Shop_list {
+
+	fmt.Println("shop_list", data.ShopList)
+	for _, shop := range data.ShopList {
+
 		// 	//データベースに保存する
-		h.Db.Create(&models.Product{Product: shop.Shop_name})
+		h.Db.Create(&models.Product{Product: shop.ShopName})
 	}
 
 }
