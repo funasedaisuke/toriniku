@@ -1,7 +1,7 @@
 package db
 
 import (
-	"toriniku/models"
+	"toriniku/models/itoyokado"
 
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
@@ -9,14 +9,19 @@ import (
 
 var db *gorm.DB
 
-// Init *gorm.DBはreturnの型
+// Init 接続、マイグレーション
 func Init() *gorm.DB {
+
 	db = gormConnect()
+
 	// ロガーを有効にすると、詳細なログを表示します
 	db.LogMode(true)
-	//マイグレーションを実行するとテーブルが無い時は自動生成。あるときはなにもしない
-	db.AutoMigrate(&models.Items{})
-	db.AutoMigrate(&models.Product{})
+
+	// イトーヨーカドーテーブル
+	db.AutoMigrate(&itoyokado.Group{})
+	db.AutoMigrate(&itoyokado.Product{})
+	db.AutoMigrate(&itoyokado.Stock{})
+
 	return db
 }
 

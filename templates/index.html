@@ -97,9 +97,19 @@
       <h5>商品名:{{.Product}}</h5>
       <h5>100g当たりの最安値:{{.Per100G}}円</h5>
     {{end}}
-    <form method="POST" action="/api" >
-    <input class="btn btn-info" type="submit" value="とり肉の最新最安値">
+  
+    <form method="POST" action="/shoplist" >
+      <input class="btn btn-info" type="submit" value="イトーヨーカドー 店舗一覧取得">
     </form>
+
+    <form method="POST" action="/search" >
+      <div>店舗コード：<input type="number" name="shopcode"></div>
+      <input class="btn btn-info" type="submit" value="指定された店舗から情報取得">
+    </form>
+
+    <form method="POST" action="/compare" >
+      <input class="btn btn-info" type="submit" value="とり肉の最新最安値">
+    </form>    
 
     <img class= "box" src="../assets/images/muscle.jpg" alt="マッチョ" title="マッチョ">
   </div>

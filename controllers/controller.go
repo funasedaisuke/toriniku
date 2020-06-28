@@ -6,7 +6,10 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"toriniku/models"
+	"sort"
+	"strconv"
+	"toriniku/config"
+	"toriniku/models/itoyokado"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
@@ -20,7 +23,7 @@ type NikuHandler struct {
 // GetAll 一覧表示
 func (h *NikuHandler) GetAll(c *gin.Context) {
 
-	var products []models.Product
+	var products []itoyokado.Product
 	//データベース内の最新情報を格納
 	h.Db.Last(&products)
 	//index.htmlに最新情報を渡す
@@ -29,63 +32,69 @@ func (h *NikuHandler) GetAll(c *gin.Context) {
 	})
 }
 
-// Getjson １店舗の鶏肉情報を取得
-func (h *NikuHandler) Getjson(c *gin.Context) {
+// Search １店舗の鶏肉情報を取得
+func (h *NikuHandler) Search(c *gin.Context) {
 
-	// 店舗URL
-	jsonStr := `{"url":"https://www.iy-net.jp/nspc/shoptop.do?shopcd=00239"}`
-	// seleniumアプリURL
-	apiurl := "http://selenium-python:5001/search"
+	var (
+		shopInfo     itoyokado.Group
+		shopCode     int
+		strShopCode  string = c.PostForm("shopcode")
+		URL          string = itoyokado.SeleniumURL
+		ResponseData itoyokado.Items
+	)
+	shopCode, _ = strconv.Atoi(strShopCode)
+
+	h.Db.First(&shopInfo, shopCode)
+
+	Body := config.ShopReq{
+		URL: shopInfo.URL,
+	}
+	byteBody, _ := json.Marshal(Body)
 
 	req, err := http.NewRequest(
 		"POST",
-		apiurl,
-		bytes.NewBuffer([]byte(jsonStr)),
+		URL,
+		bytes.NewBuffer(byteBody),
 	)
 	if err != nil {
-		fmt.Println("Get(url) error")
+		fmt.Println("NewRequest error ->", err)
 	}
 	req.Header.Add("Content-Type", "application/json")
 
-	resp, error := http.DefaultClient.Do(req)
-	if error != nil {
-		fmt.Println(error)
+	res, reserr := http.DefaultClient.Do(req)
+	if reserr != nil {
+		fmt.Println("Post error->", reserr)
 	}
 
-	defer resp.Body.Close()
-	byteArray, _ := ioutil.ReadAll(resp.Body)
+	defer res.Body.Close()
 
-	jsonBytes := []byte(byteArray)
-	data := new(models.Items)
+	byteArray, _ := ioutil.ReadAll(res.Body)
 
-	if err := json.Unmarshal(jsonBytes, &data); err != nil {
+	if err := json.Unmarshal(byteArray, &ResponseData); err != nil {
 		fmt.Println("JSON Unmarshal error:", err)
 		return
 	}
 
-	var minprice = 10000
-	var shopname = data.ShopName
-	for _, item := range data.TotalItem {
-		//一番高い金額を変数化
-		if minprice > item.Per100G {
-			minprice = item.Per100G
-		}
-	}
-	for _, item := range data.TotalItem {
-		if minprice == item.Per100G {
-			h.Db.Create(&models.Product{ShopName: shopname, Product: item.Product, Price: item.Price, Per100G: item.Per100G})
-			break
-		}
+	for _, item := range ResponseData.TotalItem {
+		h.Db.Create(&itoyokado.Product{
+			ShopName: ResponseData.ShopName,
+			Product:  item.Product,
+			Price:    item.Price,
+			Per100G:  item.Per100G},
+		)
 	}
 	c.Redirect(http.StatusMovedPermanently, "/top")
 }
 
-// GetURL 各店舗のURLを取得
-func GetURL(h *NikuHandler) {
+// GetShopURL 各店舗のURLを取得
+func (h *NikuHandler) GetShopURL(c *gin.Context) {
 
-	url := "http://localhost:5001/shoplist"
+	var (
+		URL          string = itoyokado.ShopListURL
+		ResponseData config.Shops
+	)
 
-	resp, error := http.Get(url)
+	resp, error := http.Get(URL)
 	if error != nil {
 		fmt.Println(error)
 	}
@@ -95,23 +104,60 @@ func GetURL(h *NikuHandler) {
 	byteArray, _ := ioutil.ReadAll(resp.Body)
 	jsonBytes := ([]byte)(byteArray)
 
-	data := new(models.Shops)
-
 	fmt.Println(jsonBytes)
-	fmt.Println(data)
 
-	if err := json.Unmarshal(jsonBytes, &data); err != nil {
+	if err := json.Unmarshal(jsonBytes, &ResponseData); err != nil {
 		fmt.Println("JSON Unmarshal error:", err)
 		return
 	}
 
-	fmt.Println("shop_list", data.ShopList)
-	for _, shop := range data.ShopList {
+	fmt.Println("shop_list", ResponseData.ShopList)
+	for _, shop := range ResponseData.ShopList {
 
-		// 	//データベースに保存する
-		h.Db.Create(&models.Product{Product: shop.ShopName})
+		// データベースに保存する
+		h.Db.Create(&itoyokado.Group{
+			ShopName:   shop.ShopName,
+			URL:        shop.URL,
+			Prefecture: shop.Prefecture,
+		})
+	}
+	c.Redirect(http.StatusMovedPermanently, "/top")
+}
+
+// Compare 別店舗との価格比較
+func (h *NikuHandler) Compare(c *gin.Context) {
+
+	var (
+		products  []itoyokado.Product
+		mapresult map[string]itoyokado.Product
+		result    []itoyokado.Product
+	)
+	//データベース内の最新情報を格納
+	h.Db.Where("product LIKE ?", "%若鶏もも肉%").Find(&products)
+
+	mapresult = map[string]itoyokado.Product{}
+
+	for _, product := range products {
+		if _, ok := mapresult[product.ShopName]; ok {
+			if mapresult[product.ShopName].Per100G > product.Per100G {
+				mapresult[product.ShopName] = product
+			}
+		} else {
+			mapresult[product.ShopName] = product
+		}
+	}
+	for _, val := range mapresult {
+		result = append(result, val)
 	}
 
+	sort.Slice(result, func(i, j int) bool {
+		return result[i].Per100G > result[j].Per100G
+	})
+
+	//index.htmlに最新情報を渡す
+	c.HTML(http.StatusOK, "index.html", gin.H{
+		"products": result,
+	})
 }
 
 // func (h *TodoHandler) EditTask(c *gin.Context) {
