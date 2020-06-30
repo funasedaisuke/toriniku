@@ -6,7 +6,7 @@ import (
 
 const (
 	// SeleniumURL seleniumAPI
-	SeleniumURL = "http://selenium-python:5001/search"
+	SeleniumURL = "http://selenium-python:5001/yokado_search"
 
 	// ShopListURL イトーヨーカドー店舗名、URL一括取得API
 	ShopListURL = "http://selenium-python:5001/shoplist"
