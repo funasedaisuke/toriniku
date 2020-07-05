@@ -2,6 +2,7 @@ package db
 
 import (
 	"toriniku/models/itoyokado"
+	"toriniku/models/life"
 
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
@@ -21,6 +22,11 @@ func Init() *gorm.DB {
 	db.AutoMigrate(&itoyokado.Group{})
 	db.AutoMigrate(&itoyokado.Product{})
 	db.AutoMigrate(&itoyokado.Stock{})
+
+	// ライフテーブル
+	db.AutoMigrate(&life.Group{})
+	db.AutoMigrate(&life.Product{})
+	db.AutoMigrate(&life.Stock{})
 
 	return db
 }
@@ -52,31 +58,3 @@ func Get() *gorm.DB {
 func Close() {
 	db.Close()
 }
-
-// func dbGetAll() []Product {
-// 	db := gormConnect()
-
-// 	defer db.Close()
-// 	var products []Product
-// 	// FindでDB名を指定して取得した後、orderで登録順に並び替え
-// 	db.Order("created_at desc").Find(&products)
-// 	return products
-// }
-
-// //DB一つ取得
-// func dbGetOne(id int) Product {
-// 	db := gormConnect()
-// 	var product Product
-// 	db.First(&product, id)
-// 	db.Close()
-// 	return product
-// }
-
-// //DB削除
-// func dbDelete(id int) {
-// 	db := gormConnect()
-// 	var product Product
-// 	db.First(&product, id)
-// 	db.Delete(&product)
-// 	db.Close()
-// }

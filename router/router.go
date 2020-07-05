@@ -6,14 +6,16 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
-	// "github.com/me/toriniku/db"
 )
 
 // Router APIルーティング
 func Router(dbConn *gorm.DB) {
 
-	//初期化したデータベースをcontrollersに渡す
-	nikuHandler := controllers.NikuHandler{
+	YokadoHandler := controllers.YokadoHandler{
+		Db: dbConn,
+	}
+
+	LifeHandler := controllers.LifeHandler{
 		Db: dbConn,
 	}
 
@@ -21,15 +23,21 @@ func Router(dbConn *gorm.DB) {
 	router.Static("/assets", "./assets")
 	router.LoadHTMLGlob("templates/*")
 
-	router.GET("/top", nikuHandler.GetAll)
-	router.POST("/search", nikuHandler.Search)
-	router.POST("/shoplist", nikuHandler.GetShopURL)
-	router.POST("/compare", nikuHandler.Compare)
+	router.GET("/top", YokadoHandler.GetAll)
 
-	// r.POST("/todo", nikuHandler.CreateTask)            // 新規作成
-	// r.GET("/todo/:id", nikuHandler.EditTask)           // 編集画面
-	// r.POST("/todo/edit/:id", nikuHandler.UpdateTask)   // 更新
-	// r.POST("/todo/delete/:id", nikuHandler.DeleteTask) // 削除
+	itoyokado := router.Group("/itoyokado")
+	{
+		itoyokado.POST("/search", YokadoHandler.Search)
+		itoyokado.POST("/shoplist", YokadoHandler.GetShopURL)
+		itoyokado.POST("/compare", YokadoHandler.Compare)
+	}
+
+	life := router.Group("/life")
+	{
+		life.POST("/search", LifeHandler.Search)
+		life.POST("/shoplist", LifeHandler.GetShopURL)
+		life.POST("/compare", LifeHandler.Compare)
+	}
 
 	router.Run(config.ServerPort)
 }

@@ -1,4 +1,4 @@
-package itoyokado
+package life
 
 import (
 	"github.com/jinzhu/gorm"
@@ -6,12 +6,12 @@ import (
 
 const (
 	// SeleniumURL seleniumAPI
-	SeleniumURL = "http://selenium-python:5001/itoyokado/search"
+	SeleniumURL = "http://selenium-python:5001/life/search"
 
-	// ShopListURL イトーヨーカドー店舗名、URL一括取得API
-	ShopListURL = "http://selenium-python:5001/itoyokado/shoplist"
+	// ShopListURL ライフ店舗名、URL一括取得API
+	ShopListURL = "http://selenium-python:5001/life/shoplist"
 
-	// ShopURL イトーヨーカドー商品取得API
+	// ShopURL ライフ商品取得API
 	// ShopURL = "https://www.iy-net.jp/nspc/shoptop.do?shopcd="
 	ShopURL = "https://www.iy-net.jp/nspc/shoptop.do?shopcd=00239"
 )
@@ -26,7 +26,7 @@ type Group struct {
 
 // TableName 店舗テーブル名
 func (g Group) TableName() string {
-	return "group_itoyokado"
+	return "group_life"
 }
 
 // Stock 在庫テーブル
@@ -39,7 +39,7 @@ type Stock struct {
 
 // TableName 在庫テーブル名
 func (s Stock) TableName() string {
-	return "stock_itoyokado"
+	return "stock_life"
 }
 
 // Product 商品テーブル
@@ -53,7 +53,7 @@ type Product struct {
 
 // TableName 在庫テーブル名
 func (p Product) TableName() string {
-	return "product_itoyokado"
+	return "product_life"
 }
 
 // Items seliniumレスポンス
