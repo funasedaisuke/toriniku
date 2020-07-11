@@ -19,6 +19,10 @@ func Router(dbConn *gorm.DB) {
 		Db: dbConn,
 	}
 
+	AeonHandler := controllers.AeonHandler{
+		Db: dbConn,
+	}
+
 	router := gin.Default()
 	router.Static("/assets", "./assets")
 	router.LoadHTMLGlob("templates/*")
@@ -37,6 +41,13 @@ func Router(dbConn *gorm.DB) {
 		life.POST("/search", LifeHandler.Search)
 		life.POST("/shoplist", LifeHandler.GetShopURL)
 		life.POST("/compare", LifeHandler.Compare)
+	}
+
+	aeon := router.Group("/aeon")
+	{
+		aeon.POST("/search", AeonHandler.Search)
+		aeon.POST("/shoplist", AeonHandler.GetShopURL)
+		aeon.POST("/compare", AeonHandler.Compare)
 	}
 
 	router.Run(config.ServerPort)

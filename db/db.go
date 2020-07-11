@@ -1,6 +1,7 @@
 package db
 
 import (
+	"toriniku/models/aeon"
 	"toriniku/models/itoyokado"
 	"toriniku/models/life"
 
@@ -27,6 +28,11 @@ func Init() *gorm.DB {
 	db.AutoMigrate(&life.Group{})
 	db.AutoMigrate(&life.Product{})
 	db.AutoMigrate(&life.Stock{})
+
+	// イオンテーブル
+	db.AutoMigrate(&aeon.Group{})
+	db.AutoMigrate(&aeon.Product{})
+	db.AutoMigrate(&aeon.Stock{})
 
 	return db
 }

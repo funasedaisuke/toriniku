@@ -7,7 +7,8 @@ const (
 
 // ShopReq 店舗名、URL一括取得APIリクエストボディ
 type ShopReq struct {
-	URL string `json:"url"`
+	URL  string `json:"url"`
+	Shop string `json:"shop"`
 }
 
 // Shops seleniumレスポンス
