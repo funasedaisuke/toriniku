@@ -1,7 +1,7 @@
 package aeon
 
 import (
-	"github.com/jinzhu/gorm"
+	"toriniku/models/common"
 )
 
 const (
@@ -16,25 +16,38 @@ const (
 	ShopURL = "https://www.iy-net.jp/nspc/shoptop.do?shopcd=00239"
 )
 
-// Group 店舗テーブル
 type Group struct {
-	ID         uint `gorm:"primary_key"`
-	ShopName   string
-	URL        string
-	Prefecture string
+	common.Group
 }
 
 // TableName 店舗テーブル名
-func (g Group) TableName() string {
+func (g *Group) TableName() string {
 	return "group_aeon"
 }
 
+// Group 店舗テーブル
+// type Group struct {
+// 	ID         uint `gorm:"primary_key"`
+// 	ShopName   string
+// 	URL        string
+// 	Prefecture string
+// }
+
+// // TableName 店舗テーブル名
+// func (g Group) TableName() string {
+// 	return "group_aeon"
+// }
+
 // Stock 在庫テーブル
+// type Stock struct {
+// 	gorm.Model
+// 	ShopID      uint
+// 	ProductID   uint
+// 	ProductName string
+// }
+
 type Stock struct {
-	gorm.Model
-	ShopID      uint
-	ProductID   uint
-	ProductName string
+	common.Stock
 }
 
 // TableName 在庫テーブル名
@@ -43,12 +56,16 @@ func (s Stock) TableName() string {
 }
 
 // Product 商品テーブル
+// type Product struct {
+// 	gorm.Model
+// 	ShopName string
+// 	Product  string
+// 	Price    int
+// 	Per100G  int
+// }
+
 type Product struct {
-	gorm.Model
-	ShopName string
-	Product  string
-	Price    int
-	Per100G  int
+	common.Product
 }
 
 // TableName 在庫テーブル名
