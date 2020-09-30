@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/me/toriniku/db"
-	"github.com/me/toriniku/router"
+	"toriniku/db"
+	"toriniku/router"
 )
 
 func main() {

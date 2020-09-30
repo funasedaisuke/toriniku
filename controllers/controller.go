@@ -1,15 +1,15 @@
 package controllers
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/jinzhu/gorm"
-	"github.com/me/toriniku/models"
-	"net/http"
-	// "strconv"
 	"bytes"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"net/http"
+	"toriniku/models"
+
+	"github.com/gin-gonic/gin"
+	"github.com/jinzhu/gorm"
 )
 
 type NikuHandler struct {
@@ -35,7 +35,8 @@ func (h *NikuHandler) Getjson(c *gin.Context) {
 	jsonStr := `{"url":"https://www.iy-net.jp/nspc/shoptop.do?shopcd=00239"}`
 
 	// POSTメソッド
-	apiurl := "http://localhost:5001/search"
+	// apiurl := "http://172.26.0.3:5001/search"
+	apiurl := "http://selenium-python:5001/search"
 	//Getメソッド
 	// resp, err := http.Get(url)
 	req, err := http.NewRequest(

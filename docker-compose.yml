@@ -1,0 +1,41 @@
+version: '3'
+
+services:
+
+    toriniku_mysql:
+        image: mysql:5.7
+        container_name: toriniku_mysql
+        hostname: mysql
+        environment:
+            MYSQL_ROOT_PASSWORD: root
+            MYSQL_DATABASE: test
+            MYSQL_USER: test
+            MYSQL_PASSWORD: 12345678
+            TZ: 'Asia/Tokyo'
+        command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+        volumes:
+            - ./docker/mysql/data:/var/lib/mysql
+            - ./docker/mysql/my.cnf:/etc/mysql/conf.d/my.cnf
+        ports:
+            - 3306:3306
+
+    toriniku_go:
+        depends_on:
+            - toriniku_mysql
+        build:
+            context: .
+            dockerfile: ./docker/golang/Dockerfile
+        container_name: toriniku_go
+        ports:
+            - "8000:8000"
+        volumes:
+            - .:/go/src/toriniku
+        command: sh ./start_app.sh
+        networks: 
+            default:
+            shared-network:
+                aliases: 
+                    - toriniku-go
+networks: 
+    shared-network:
+        external: true      
