@@ -1,29 +1,63 @@
 package router
 
 import (
+	"toriniku/config"
 	"toriniku/controllers"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
-	// "github.com/me/toriniku/db"
 )
 
+// Router APIルーティング
 func Router(dbConn *gorm.DB) {
 
-	//初期化したデータベースをcontrollersに渡す
-	nikuHandler := controllers.NikuHandler{
+	YokadoHandler := controllers.YokadoHandler{
 		Db: dbConn,
 	}
-	//Default() はLoggerとRecoveryというミドルウェア設定
-	r := gin.Default()
-	r.Static("/assets", "./assets")
-	r.LoadHTMLGlob("templates/*")
-	r.GET("/top", nikuHandler.GetAll)   // 一覧画面
-	r.POST("/api", nikuHandler.Getjson) // json結果取得
-	// r.GET("/json", nikuHandler.Getjson) // json画面
-	// r.POST("/todo", nikuHandler.CreateTask)            // 新規作成
-	// r.GET("/todo/:id", nikuHandler.EditTask)           // 編集画面
-	// r.POST("/todo/edit/:id", nikuHandler.UpdateTask)   // 更新
-	// r.POST("/todo/delete/:id", nikuHandler.DeleteTask) // 削除
-	r.Run(":8000")
+
+	LifeHandler := controllers.LifeHandler{
+		Db: dbConn,
+	}
+
+	AeonHandler := controllers.AeonHandler{
+		Db: dbConn,
+	}
+
+	CommonHandler := controllers.CommonHandler{
+		Db: dbConn,
+	}
+
+	router := gin.Default()
+	router.Static("/assets", "./assets")
+	router.LoadHTMLGlob("templates/*")
+
+	router.GET("/top", YokadoHandler.GetAll)
+
+	itoyokado := router.Group("/itoyokado")
+	{
+		itoyokado.POST("/search", YokadoHandler.Search)
+		itoyokado.POST("/shoplist", YokadoHandler.GetShopURL)
+		itoyokado.POST("/compare", YokadoHandler.Compare)
+	}
+
+	life := router.Group("/life")
+	{
+		life.POST("/search", LifeHandler.Search)
+		life.POST("/shoplist", LifeHandler.GetShopURL)
+		life.POST("/compare", LifeHandler.Compare)
+	}
+
+	aeon := router.Group("/aeon")
+	{
+		aeon.POST("/search", AeonHandler.Search)
+		aeon.POST("/shoplist", AeonHandler.GetShopURL)
+		aeon.POST("/compare", AeonHandler.Compare)
+	}
+
+	common := router.Group("/common")
+	{
+		common.POST("/compare", CommonHandler.Compare)
+	}
+
+	router.Run(config.ServerPort)
 }
